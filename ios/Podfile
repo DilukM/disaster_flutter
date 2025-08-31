@@ -1,0 +1,44 @@
+platform :ios, '13.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcworkspace', 'Contents.xcworkspacedata'), __FILE__)
+  return unless File.exist?(generated_xcode_build_settings_path)
+  require 'rexml/document'
+  document = REXML::Document.new(File.new(generated_xcode_build_settings_path))
+  root = document.root
+  return root.elements['Workspace'].elements['FileRef'].attributes['location'].sub('group:', '').sub(/\A\/+/, '')
+end
+
+def flutter_ios_podfile_setup
+  flutter_root_path = flutter_root
+  return unless flutter_root_path
+  pod 'Flutter', :path => File.join(flutter_root_path, 'packages', 'flutter')
+  pod 'FlutterPluginRegistrant', :path => File.join(flutter_root_path, 'packages', 'flutter_plugin_registrant')
+end
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+    end
+  end
+end
