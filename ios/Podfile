@@ -1,3 +1,4 @@
+# Uncomment this line to define a global platform for your project
 platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -21,8 +22,9 @@ end
 def flutter_ios_podfile_setup
   flutter_root_path = flutter_root
   return unless flutter_root_path
-  pod 'Flutter', :path => File.join(flutter_root_path, 'packages', 'flutter')
-  pod 'FlutterPluginRegistrant', :path => File.join(flutter_root_path, 'packages', 'flutter_plugin_registrant')
+  symlink = flutter_root_path.start_with?('/') ? 'symlink' : 'copy'
+  pod 'Flutter', :path => File.join(flutter_root_path, symlink, 'Flutter')
+  pod 'FlutterPluginRegistrant', :path => File.join(flutter_root_path, symlink, 'FlutterPluginRegistrant')
 end
 
 flutter_ios_podfile_setup
@@ -31,7 +33,9 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  # Firebase Pods
+  pod 'Firebase/CoreOnly', '12.0.0'
+  pod 'FirebaseFirestore', '12.0.0'
 end
 
 post_install do |installer|
