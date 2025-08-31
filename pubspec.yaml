@@ -1,10 +1,10 @@
 name: desaster
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.2
+version: 0.1.4
 
 environment:
-  sdk: ^3.19.0
+  sdk: ^3.8.1
 
 dependencies:
   flutter:
