@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96044828630",
+    "project_id": "location-40f00",
+    "storage_bucket": "location-40f00.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96044828630:android:9e215a06e6dccd9dca0677",
+        "android_client_info": {
+          "package_name": "com.acvsoft.desaster.desaster"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpBV40jgQB090wSK4aR6d2Q-TkvXB0Ptg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
