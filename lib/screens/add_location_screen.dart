@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
@@ -19,7 +18,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   final MapController _mapController = MapController();
   LatLng? _selectedLocation;
   double _currentZoom = 1.0;
-  Location _location = Location();
+  final Location _location = Location();
   LatLng? _currentLocation;
   double _customRadius = AppConstants.geofenceRadius;
   final TextEditingController _radiusController = TextEditingController();
@@ -122,11 +121,11 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                         _currentZoom,
                         _selectedLocation!.latitude,
                       ),
-                      color: Colors.blue.withOpacity(
-                        AppConstants.geofenceFillOpacity,
+                      color: Colors.blue.withValues(
+                        alpha: AppConstants.geofenceFillOpacity,
                       ),
-                      borderColor: Colors.blue.withOpacity(
-                        AppConstants.geofenceBorderOpacity,
+                      borderColor: Colors.blue.withValues(
+                        alpha: AppConstants.geofenceBorderOpacity,
                       ),
                       borderStrokeWidth: AppConstants.geofenceBorderWidth,
                     ),
@@ -174,15 +173,15 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                     margin: EdgeInsets.only(bottom: 10),
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.blue.withOpacity(0.5),
+                        color: Colors.blue.withValues(alpha: 0.5),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -243,7 +242,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -263,7 +262,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                             fontWeight: FontWeight.w600,
                             color: _selectedLocation != null
                                 ? Colors.white
-                                : Colors.white.withOpacity(0.7),
+                                : Colors.white.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -286,6 +285,9 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         _selectedLocation!,
         radius: _customRadius,
       );
+      
+      if (!mounted) return;
+      
       toastification.show(
         context: context,
         type: ToastificationType.success,
@@ -295,7 +297,6 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         alignment: Alignment.topCenter,
         autoCloseDuration: const Duration(seconds: 3),
         showProgressBar: false,
-        closeButtonShowType: CloseButtonShowType.onHover,
         closeOnClick: true,
         pauseOnHover: true,
       );
@@ -303,6 +304,8 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         _selectedLocation = null;
       });
     } catch (e) {
+      if (!mounted) return;
+      
       toastification.show(
         context: context,
         type: ToastificationType.error,
@@ -312,7 +315,6 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         alignment: Alignment.topCenter,
         autoCloseDuration: const Duration(seconds: 4),
         showProgressBar: false,
-        closeButtonShowType: CloseButtonShowType.onHover,
         closeOnClick: true,
         pauseOnHover: true,
       );

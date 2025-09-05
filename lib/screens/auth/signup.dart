@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -24,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
         password: _passwordController.text,
       );
       // TODO: Navigate to home page after successful sign up
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -48,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
             margin: EdgeInsets.all(16),
             child: Card(
               elevation: 12,
-              shadowColor: Colors.lightBlue.withOpacity(0.3),
+              shadowColor: Colors.lightBlue.withValues(alpha: 0.3),
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Form(
@@ -148,11 +151,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                   _signUp();
                                 }
                               },
-                              child: Text('Create Account'),
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(double.infinity, 52),
                                 elevation: 4,
                               ),
+                              child: Text('Create Account'),
                             ),
                       SizedBox(height: 24),
                       Container(

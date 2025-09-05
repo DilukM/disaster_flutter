@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import '../util/app_constants.dart';
+import 'dart:developer' as developer;
 
 class ViewLocationsScreen extends StatefulWidget {
   const ViewLocationsScreen({super.key});
@@ -65,7 +66,7 @@ class _ViewLocationsScreenState extends State<ViewLocationsScreen> {
       // Move map to current location
       _mapController.move(_currentLocation, 1.75);
     } catch (e) {
-      print('Error getting location: $e');
+      developer.log('Error getting location: $e');
     }
   }
 
@@ -92,7 +93,7 @@ class _ViewLocationsScreenState extends State<ViewLocationsScreen> {
         }).toList();
       });
     } catch (e) {
-      print('Error fetching locations: $e');
+      developer.log('Error fetching locations: $e');
     }
   }
 
@@ -137,11 +138,11 @@ class _ViewLocationsScreenState extends State<ViewLocationsScreen> {
                   return CircleMarker(
                     point: position,
                     radius: pixelRadius,
-                    color: Colors.red.withOpacity(
-                      AppConstants.geofenceFillOpacity,
+                    color: Colors.red.withValues(
+                      alpha: AppConstants.geofenceFillOpacity,
                     ),
-                    borderColor: Colors.red.withOpacity(
-                      AppConstants.geofenceBorderOpacity,
+                    borderColor: Colors.red.withValues(
+                      alpha: AppConstants.geofenceBorderOpacity,
                     ),
                     borderStrokeWidth: AppConstants.geofenceBorderWidth,
                   );
@@ -165,8 +166,8 @@ class _ViewLocationsScreenState extends State<ViewLocationsScreen> {
         shape: CircleBorder(),
         onPressed: _centerOnCurrentLocation,
         backgroundColor: Colors.blue.shade600,
-        child: const Icon(Icons.my_location, color: Colors.white),
         tooltip: 'Center on current location',
+        child: const Icon(Icons.my_location, color: Colors.white),
       ),
     );
   }

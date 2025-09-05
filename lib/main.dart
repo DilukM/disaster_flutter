@@ -47,7 +47,7 @@ class MainApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            shadowColor: Colors.lightBlue.withOpacity(0.2),
+            shadowColor: Colors.lightBlue.withValues(alpha: 0.2),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(

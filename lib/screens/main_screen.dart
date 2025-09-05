@@ -72,7 +72,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               spreadRadius: 5,
               offset: const Offset(0, 5),
@@ -119,7 +119,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.lightBlue.shade600,
           unselectedItemColor: Colors.grey.shade500,
-          backgroundColor: Colors.white.withOpacity(0.95),
+          backgroundColor: Colors.white.withValues(alpha: 0.95),
           elevation: 0,
           type: BottomNavigationBarType.fixed,
           selectedFontSize: 12,

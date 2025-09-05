@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
@@ -24,7 +26,8 @@ class _SignInPageState extends State<SignInPage> {
         password: _passwordController.text,
       );
       // TODO: Navigate to home page after successful sign in
-       Navigator.pushReplacementNamed(context, '/home');
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message;
@@ -48,7 +51,7 @@ class _SignInPageState extends State<SignInPage> {
             margin: EdgeInsets.all(16),
             child: Card(
               elevation: 12,
-              shadowColor: Colors.lightBlue.withOpacity(0.3),
+              shadowColor: Colors.lightBlue.withValues(alpha: 0.3),
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Form(
@@ -148,11 +151,11 @@ class _SignInPageState extends State<SignInPage> {
                                   _signIn();
                                 }
                               },
-                              child: Text('Sign In'),
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(double.infinity, 52),
                                 elevation: 4,
                               ),
+                              child: Text('Sign In'),
                             ),
                       SizedBox(height: 24),
                       Container(
