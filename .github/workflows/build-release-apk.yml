@@ -67,7 +67,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'latest'
+          flutter-version: '3.35.2'
           channel: 'stable'
           cache: true
 
@@ -114,7 +114,7 @@ jobs:
             
             ## 🔄 Changes
             - Version updated to ${{ needs.check-version-change.outputs.new-version }}
-            - Built with latest stable Flutter
+            - Built with Flutter 3.35.2
             
             ## 📋 Installation
             1. Download the APK file
