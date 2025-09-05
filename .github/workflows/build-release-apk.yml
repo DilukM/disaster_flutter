@@ -67,9 +67,15 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: 'latest'
           channel: 'stable'
           cache: true
+
+      - name: Verify Flutter and Dart versions
+        run: |
+          flutter --version
+          dart --version
+          echo "Required Dart SDK: ^3.8.1"
 
       - name: Get dependencies
         run: flutter pub get
@@ -108,7 +114,7 @@ jobs:
             
             ## 🔄 Changes
             - Version updated to ${{ needs.check-version-change.outputs.new-version }}
-            - Built with Flutter 3.24.0
+            - Built with latest stable Flutter
             
             ## 📋 Installation
             1. Download the APK file
