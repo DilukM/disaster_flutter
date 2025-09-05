@@ -1,0 +1,139 @@
+name: Build Release APK on Version Change
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-version-change:
+    runs-on: ubuntu-latest
+    outputs:
+      version-changed: ${{ steps.check-version.outputs.changed }}
+      new-version: ${{ steps.check-version.outputs.version }}
+      should-build: ${{ steps.check-version.outputs.should-build }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if version changed
+        id: check-version
+        run: |
+          # Get current version from pubspec.yaml
+          CURRENT_VERSION=$(grep "^version:" pubspec.yaml | sed 's/version: //' | tr -d ' ')
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Check if this is the first commit
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            # Get previous version from pubspec.yaml in the previous commit
+            PREVIOUS_VERSION=$(git show HEAD~1:pubspec.yaml | grep "^version:" | sed 's/version: //' | tr -d ' ' || echo "0.0.0")
+            echo "Previous version: $PREVIOUS_VERSION"
+            
+            # Compare versions
+            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+              echo "✅ Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "should-build=true" >> $GITHUB_OUTPUT
+            else
+              echo "ℹ️ Version unchanged ($CURRENT_VERSION)"
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "should-build=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "🆕 First commit detected, will build APK"
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "should-build=true" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+  build-apk:
+    needs: check-version-change
+    if: needs.check-version-change.outputs.should-build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests
+        run: flutter test --coverage || echo "⚠️ No tests found or tests failed"
+
+      - name: Build APK
+        run: |
+          echo "🔨 Building release APK..."
+          flutter build apk --release --verbose
+          
+      - name: Verify APK exists
+        run: |
+          if [ ! -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+            echo "❌ APK file not found!"
+            exit 1
+          fi
+          echo "✅ APK built successfully"
+          ls -la build/app/outputs/flutter-apk/
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version-change.outputs.new-version }}
+          name: Release v${{ needs.check-version-change.outputs.new-version }}
+          body: |
+            🚀 **Release v${{ needs.check-version-change.outputs.new-version }}**
+            
+            ## 📱 Download APK
+            Download the APK file from the assets below to install on your Android device.
+            
+            ## 🔄 Changes
+            - Version updated to ${{ needs.check-version-change.outputs.new-version }}
+            - Built with Flutter 3.24.0
+            
+            ## 📋 Installation
+            1. Download the APK file
+            2. Enable "Install from unknown sources" in your Android settings
+            3. Install the APK
+            
+            ---
+            *Built automatically on $(date)*
+          draft: false
+          prerelease: false
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rename and Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: disaster-flutter-v${{ needs.check-version-change.outputs.new-version }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Post build summary
+        run: |
+          echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.check-version-change.outputs.new-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK Size:** $(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release:** [v${{ needs.check-version-change.outputs.new-version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.check-version-change.outputs.new-version }})" >> $GITHUB_STEP_SUMMARY

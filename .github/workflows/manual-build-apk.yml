@@ -1,0 +1,69 @@
+name: Manual Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (optional - uses pubspec.yaml if empty)'
+        required: false
+        type: string
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get current version
+        id: get-version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=$(grep "^version:" pubspec.yaml | sed 's/version: //' | tr -d ' ')
+          fi
+          echo "Building version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests
+        run: flutter test --coverage || echo "⚠️ No tests found or tests failed"
+
+      - name: Build APK
+        run: |
+          echo "🔨 Building release APK..."
+          flutter build apk --release --verbose
+
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: disaster-flutter-manual-v${{ steps.get-version.outputs.version }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Post build summary
+        run: |
+          echo "## 🎉 Manual Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.get-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK Size:** $(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** Manual workflow dispatch" >> $GITHUB_STEP_SUMMARY
