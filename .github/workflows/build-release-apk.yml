@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 jobs:
   check-version-change:
     runs-on: ubuntu-latest
@@ -100,9 +105,18 @@ jobs:
           echo "✅ APK built successfully"
           ls -la build/app/outputs/flutter-apk/
 
+      - name: Upload APK as Artifact (Backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: disaster-flutter-backup-v${{ needs.check-version-change.outputs.new-version }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 90
+          if-no-files-found: error
+
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        continue-on-error: true
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version-change.outputs.new-version }}
           name: Release v${{ needs.check-version-change.outputs.new-version }}
@@ -128,6 +142,17 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
+
+      - name: Check Release Creation
+        run: |
+          if [ "${{ steps.create_release.outcome }}" = "failure" ]; then
+            echo "⚠️ Release creation failed, but APK is available as artifact"
+            echo "- Check the backup artifact: disaster-flutter-backup-v${{ needs.check-version-change.outputs.new-version }}"
+            echo "- You can manually create a release using this APK"
+          else
+            echo "✅ Release created successfully"
+          fi
 
       - name: Rename and Upload APK as Artifact
         uses: actions/upload-artifact@v4

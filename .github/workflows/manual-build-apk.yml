@@ -8,6 +8,11 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
