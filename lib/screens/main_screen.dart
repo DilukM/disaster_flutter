@@ -90,7 +90,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.map,
                       color: _selectedIndex == 0
-                          ? Colors.blue.shade600
+                          ? Colors.lightBlue.shade600
                           : Colors.grey.shade500,
                     ),
                   );
@@ -107,7 +107,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.add_location,
                       color: _selectedIndex == 1
-                          ? Colors.blue.shade600
+                          ? Colors.lightBlue.shade600
                           : Colors.grey.shade500,
                     ),
                   );
@@ -117,7 +117,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue.shade600,
+          selectedItemColor: Colors.lightBlue.shade600,
           unselectedItemColor: Colors.grey.shade500,
           backgroundColor: Colors.white.withOpacity(0.95),
           elevation: 0,

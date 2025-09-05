@@ -4,7 +4,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
-import 'app_constants.dart';
+import '../util/app_constants.dart';
 
 class ViewLocationsScreen extends StatefulWidget {
   const ViewLocationsScreen({super.key});

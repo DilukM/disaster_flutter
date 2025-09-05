@@ -5,8 +5,8 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:toastification/toastification.dart';
 import 'package:location/location.dart';
-import 'location_service.dart';
-import 'app_constants.dart';
+import '../services/location_service.dart';
+import '../util/app_constants.dart';
 
 class AddLocationScreen extends StatefulWidget {
   const AddLocationScreen({super.key});
@@ -231,18 +231,14 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   onTap: _selectedLocation != null ? _saveLocation : null,
                   child: Container(
                     decoration: BoxDecoration(
-                      color:
-                          (_selectedLocation != null
-                                  ? Colors.blue
-                                  : Colors.grey)
-                              .withOpacity(0.75),
+                      color: (_selectedLocation != null
+                          ? Colors.blue
+                          : Colors.grey),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color:
-                            (_selectedLocation != null
-                                    ? Colors.blue
-                                    : Colors.grey)
-                                .withOpacity(0.5),
+                        color: (_selectedLocation != null
+                            ? Colors.blue
+                            : Colors.grey),
                         width: 1.5,
                       ),
                       boxShadow: [
@@ -255,22 +251,19 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: BackdropFilter(
-                        filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Text(
-                            _selectedLocation != null
-                                ? 'Save Location'
-                                : 'Tap on map to select location',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: _selectedLocation != null
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.7),
-                            ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          _selectedLocation != null
+                              ? 'Save Location'
+                              : 'Tap on map to select location',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: _selectedLocation != null
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.7),
                           ),
                         ),
                       ),
