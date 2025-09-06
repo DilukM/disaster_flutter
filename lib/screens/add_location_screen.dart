@@ -1,3 +1,4 @@
+import 'package:desaster/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
@@ -121,10 +122,10 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                         _currentZoom,
                         _selectedLocation!.latitude,
                       ),
-                      color: Colors.blue.withValues(
+                      color: AppTheme.primaryColor.withValues(
                         alpha: AppConstants.geofenceFillOpacity,
                       ),
-                      borderColor: Colors.blue.withValues(
+                      borderColor: AppTheme.primaryColor.withValues(
                         alpha: AppConstants.geofenceBorderOpacity,
                       ),
                       borderStrokeWidth: AppConstants.geofenceBorderWidth,
@@ -139,7 +140,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       point: _selectedLocation!,
                       child: Icon(
                         Icons.location_on,
-                        color: Colors.blue,
+                        color: AppTheme.primaryColor,
                         size: 40,
                       ),
                     ),
@@ -162,7 +163,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       maximumSize: Size(80, 80),
                       padding: EdgeInsets.all(8),
                       iconSize: 25,
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppTheme.primaryColor,
                     ),
                     onPressed: _centerOnCurrentLocation,
                     child: Icon(Icons.my_location, color: Colors.white),
@@ -176,7 +177,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.blue.withValues(alpha: 0.5),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.5),
                         width: 1.5,
                       ),
                       boxShadow: [
@@ -191,7 +192,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       children: [
                         Icon(
                           Icons.radio_button_checked,
-                          color: Colors.blue,
+                          color: AppTheme.primaryColor,
                           size: 20,
                         ),
                         SizedBox(width: 8),
@@ -200,9 +201,10 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                             controller: _radiusController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
+                              filled: false,
                               labelText: 'Geofence Radius (meters)',
                               labelStyle: TextStyle(
-                                color: Colors.blue,
+                                color: AppTheme.primaryColor,
                                 fontSize: 14,
                               ),
                               border: InputBorder.none,
@@ -231,12 +233,12 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: (_selectedLocation != null
-                          ? Colors.blue
+                          ? AppTheme.primaryColor
                           : Colors.grey),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: (_selectedLocation != null
-                            ? Colors.blue
+                            ? AppTheme.primaryColor
                             : Colors.grey),
                         width: 1.5,
                       ),
@@ -285,9 +287,9 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         _selectedLocation!,
         radius: _customRadius,
       );
-      
+
       if (!mounted) return;
-      
+
       toastification.show(
         context: context,
         type: ToastificationType.success,
@@ -305,7 +307,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      
+
       toastification.show(
         context: context,
         type: ToastificationType.error,

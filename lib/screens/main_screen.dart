@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import 'view_locations_screen.dart';
 import 'add_location_screen.dart';
+import 'settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,13 +19,14 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   static const List<Widget> _screens = <Widget>[
     ViewLocationsScreen(),
     AddLocationScreen(),
+    SettingsScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppTheme.animationDuration,
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
@@ -52,8 +55,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
+        duration: AppTheme.animationDuration,
         transitionBuilder: (Widget child, Animation<double> animation) {
           return FadeTransition(
             opacity: animation,
@@ -70,12 +74,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
+          color: AppTheme.surfaceColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppTheme.cardShadow,
               blurRadius: 20,
               spreadRadius: 5,
-              offset: const Offset(0, 5),
+              offset: const Offset(0, -5),
             ),
           ],
         ),
@@ -90,8 +95,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.map,
                       color: _selectedIndex == 0
-                          ? Colors.lightBlue.shade600
-                          : Colors.grey.shade500,
+                          ? AppTheme.primaryColor
+                          : AppTheme.textLight,
                     ),
                   );
                 },
@@ -107,19 +112,36 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.add_location,
                       color: _selectedIndex == 1
-                          ? Colors.lightBlue.shade600
-                          : Colors.grey.shade500,
+                          ? AppTheme.primaryColor
+                          : AppTheme.textLight,
                     ),
                   );
                 },
               ),
               label: 'Add Location',
             ),
+            BottomNavigationBarItem(
+              icon: AnimatedBuilder(
+                animation: _scaleAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _selectedIndex == 2 ? _scaleAnimation.value : 1.0,
+                    child: Icon(
+                      Icons.settings,
+                      color: _selectedIndex == 2
+                          ? AppTheme.primaryColor
+                          : AppTheme.textLight,
+                    ),
+                  );
+                },
+              ),
+              label: 'Settings',
+            ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.lightBlue.shade600,
-          unselectedItemColor: Colors.grey.shade500,
-          backgroundColor: Colors.white.withValues(alpha: 0.95),
+          selectedItemColor: AppTheme.primaryColor,
+          unselectedItemColor: AppTheme.textLight,
+          backgroundColor: AppTheme.surfaceColor,
           elevation: 0,
           type: BottomNavigationBarType.fixed,
           selectedFontSize: 12,
@@ -127,10 +149,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
+            color: AppTheme.textPrimary,
           ),
           unselectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 12,
+            color: AppTheme.textSecondary,
           ),
           onTap: _onItemTapped,
         ),

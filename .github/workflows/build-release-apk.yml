@@ -2,9 +2,9 @@ name: Build Release APK on Version Change
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
           # Get current version from pubspec.yaml
           CURRENT_VERSION=$(grep "^version:" pubspec.yaml | sed 's/version: //' | tr -d ' ')
           echo "Current version: $CURRENT_VERSION"
-          
+
           # Check if this is the first commit
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             # Get previous version from pubspec.yaml in the previous commit
@@ -52,7 +52,7 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "should-build=true" >> $GITHUB_OUTPUT
           fi
-          
+
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
   build-apk:
@@ -66,14 +66,14 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: "zulu"
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.2'
-          channel: 'stable'
+          flutter-version: "3.35.2"
+          channel: "stable"
           cache: true
 
       - name: Verify Flutter and Dart versions
@@ -95,7 +95,7 @@ jobs:
         run: |
           echo "🔨 Building release APK..."
           flutter build apk --release --verbose
-          
+
       - name: Verify APK exists
         run: |
           if [ ! -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
@@ -122,19 +122,19 @@ jobs:
           name: Release v${{ needs.check-version-change.outputs.new-version }}
           body: |
             🚀 **Release v${{ needs.check-version-change.outputs.new-version }}**
-            
+
             ## 📱 Download APK
             Download the APK file from the assets below to install on your Android device.
-            
+
             ## 🔄 Changes
             - Version updated to ${{ needs.check-version-change.outputs.new-version }}
             - Built with Flutter 3.35.2
-            
+
             ## 📋 Installation
             1. Download the APK file
             2. Enable "Install from unknown sources" in your Android settings
             3. Install the APK
-            
+
             ---
             *Built automatically on $(date)*
           draft: false

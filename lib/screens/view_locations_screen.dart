@@ -1,3 +1,4 @@
+import 'package:desaster/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
@@ -165,7 +166,7 @@ class _ViewLocationsScreenState extends State<ViewLocationsScreen> {
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         onPressed: _centerOnCurrentLocation,
-        backgroundColor: Colors.blue.shade600,
+        backgroundColor: AppTheme.primaryColor,
         tooltip: 'Center on current location',
         child: const Icon(Icons.my_location, color: Colors.white),
       ),

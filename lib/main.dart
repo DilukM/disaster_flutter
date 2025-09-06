@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import 'package:desaster/screens/auth/signin.dart';
 import 'package:desaster/screens/auth/signup.dart';
+import 'package:desaster/screens/auth_wrapper.dart';
+import 'package:desaster/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
   runApp(const MainApp());
 }
 
@@ -24,87 +27,14 @@ class MainApp extends StatelessWidget {
         animationDuration: Duration(milliseconds: 500),
       ),
       child: MaterialApp(
-        title: '@Risk',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.lightBlue,
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-          appBarTheme: AppBarTheme(
-            elevation: 0,
-            centerTitle: true,
-            backgroundColor: Colors.lightBlue.shade50,
-            foregroundColor: Colors.lightBlue.shade800,
-            titleTextStyle: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.lightBlue.shade800,
-            ),
-          ),
-          cardTheme: CardThemeData(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            shadowColor: Colors.lightBlue.withValues(alpha: 0.2),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.lightBlue,
-              foregroundColor: Colors.white,
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.lightBlue,
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.lightBlue.shade50,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.lightBlue.shade200),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.lightBlue.shade200),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.lightBlue, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.red.shade300),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.red, width: 2),
-            ),
-            labelStyle: TextStyle(color: Colors.lightBlue.shade700),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          ),
-          textTheme: TextTheme(
-            headlineSmall: TextStyle(
-              color: Colors.lightBlue.shade800,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        title: AppTheme.appName,
+        theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
-        initialRoute: '/signin',
+        home: const AuthWrapper(),
         routes: {
-          '/signin': (context) => SignInPage(),
-          '/signup': (context) => SignUpPage(),
-          '/home': (context) => MainScreen(),
+          '/signin': (context) => const SignInPage(),
+          '/signup': (context) => const SignUpPage(),
+          '/home': (context) => const MainScreen(),
         },
       ),
     );

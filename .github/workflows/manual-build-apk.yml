@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build (optional - uses pubspec.yaml if empty)'
+        description: "Version to build (optional - uses pubspec.yaml if empty)"
         required: false
         type: string
 
@@ -23,14 +23,14 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: "zulu"
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.2'
-          channel: 'stable'
+          flutter-version: "3.35.2"
+          channel: "stable"
           cache: true
 
       - name: Verify Flutter and Dart versions
