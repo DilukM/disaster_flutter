@@ -5,7 +5,7 @@ import 'dart:developer' as developer;
 /// Service class to handle all authentication operations
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // SharedPreferences keys for UI convenience only
   static const String _userEmailKey = 'user_email';
 
@@ -28,12 +28,12 @@ class AuthService {
       developer.log(
         'User signed in successfully: ${userCredential.user?.email}',
       );
-      
+
       // Save user email for UI convenience (pre-filling email field)
       if (rememberUser) {
         await _saveUserEmail(email.trim());
       }
-      
+
       return AuthResult.success();
     } on FirebaseAuthException catch (e) {
       developer.log(
@@ -64,12 +64,12 @@ class AuthService {
       developer.log(
         'User signed up successfully: ${userCredential.user?.email}',
       );
-      
+
       // Save user email for UI convenience (pre-filling email field)
       if (rememberUser) {
         await _saveUserEmail(email.trim());
       }
-      
+
       return AuthResult.success();
     } on FirebaseAuthException catch (e) {
       developer.log(
@@ -88,10 +88,10 @@ class AuthService {
   static Future<AuthResult> signOut() async {
     try {
       await _auth.signOut();
-      
+
       // Clear saved email from SharedPreferences
       await _clearUserEmail();
-      
+
       developer.log('User signed out successfully');
       return AuthResult.success();
     } catch (e) {
@@ -122,7 +122,7 @@ class AuthService {
   }
 
   // Helper methods for email storage (UI convenience only)
-  
+
   /// Save user email to SharedPreferences for UI convenience
   static Future<void> _saveUserEmail(String email) async {
     try {
@@ -157,7 +157,7 @@ class AuthService {
   }
 
   // Validation methods
-  
+
   /// Check if email is valid
   static bool isValidEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
@@ -174,7 +174,7 @@ class AuthService {
   }
 
   // Error message helpers
-  
+
   /// Get user-friendly error message for sign in errors
   static String _getSignInErrorMessage(String errorCode) {
     switch (errorCode) {

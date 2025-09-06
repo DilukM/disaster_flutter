@@ -140,7 +140,7 @@ class AppTheme {
           horizontal: 16,
           vertical: 16,
         ),
-        
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: borderColor),
@@ -281,12 +281,12 @@ class AppTheme {
   // Logo container decoration
   static BoxDecoration get logoContainerDecoration => BoxDecoration(
     color: Colors.white.withValues(alpha: 0.9),
-    shape: BoxShape.circle,
+    borderRadius: BorderRadiusGeometry.circular(16),
     boxShadow: [
       BoxShadow(
-        color: primaryColor.withValues(alpha: 0.3),
-        blurRadius: 20,
-        offset: const Offset(0, 8),
+        color: Colors.black26,
+        blurRadius: 4,
+        offset: const Offset(0, 2),
       ),
     ],
   );

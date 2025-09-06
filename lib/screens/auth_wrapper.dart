@@ -41,9 +41,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.authGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.authGradient),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -54,23 +52,20 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 height: 120,
                 decoration: AppTheme.logoContainerDecoration,
                 child: ClipOval(
-                  child: Image.asset(
-                    AppTheme.logoPath,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.asset(AppTheme.logoPath, fit: BoxFit.cover),
                 ),
               ),
-              
+
               const SizedBox(height: AppTheme.spacingXl),
-              
+
               // Loading indicator
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 strokeWidth: 3,
               ),
-              
+
               const SizedBox(height: AppTheme.spacingLg),
-              
+
               // Loading text
               const Text(
                 'Loading...',

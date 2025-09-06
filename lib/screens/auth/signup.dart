@@ -132,14 +132,26 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                           return Transform.scale(
                             scale: _logoAnimation.value,
                             child: Container(
-                              width: 120,
                               height: 120,
                               decoration: AppTheme.logoContainerDecoration,
-                              child: ClipOval(
-                                child: Image.asset(
-                                  AppTheme.logoPath,
-                                  fit: BoxFit.cover,
-                                ),
+
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    AppTheme.logoPath,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Text(
+                                    AppTheme.appName,
+                                    style: TextStyle(
+                                      fontSize: 42,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
+                                ],
                               ),
                             ),
                           );
