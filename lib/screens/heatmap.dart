@@ -1,105 +1,68 @@
-import 'dart:async';
-import 'dart:convert';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_heatmap/flutter_map_heatmap.dart';
 import 'package:latlong2/latlong.dart';
 
 class HeatmapPage extends StatefulWidget {
   const HeatmapPage({super.key});
-
   @override
-  _HeatmapPageState createState() => _HeatmapPageState();
+  State<HeatmapPage> createState() => _HeatmapPageState();
 }
 
 class _HeatmapPageState extends State<HeatmapPage> {
-  StreamController<void> _rebuildStream = StreamController.broadcast();
-  List<WeightedLatLng> data = [];
-  List<Map<double, MaterialColor>> gradients = [
-    HeatMapOptions.defaultGradient,
-    {
-      0.25: Colors.blue,
-      0.55: Colors.red,
-      0.85: Colors.pink,
-      1.0: Colors.purple,
-    },
-  ];
+  final Random _random = Random();
 
-  var index = 0;
+  List<WeightedLatLng> _generateRandomPoints() {
+    return List.generate(1000, (index) {
+      // Random locations all over the world
+      final lat = -90.0 + _random.nextDouble() * 180.0; // -90 to 90
+      final lng = -180.0 + _random.nextDouble() * 360.0; // -180 to 180
 
-  initState() {
-    _loadData();
-    super.initState();
-  }
+      // Random intensity for full gradient visibility
+      final intensity = 0.1 + _random.nextDouble() * 0.9;
 
-  @override
-  dispose() {
-    _rebuildStream.close();
-    super.dispose();
-  }
-
-  _loadData() async {
-    var str = await rootBundle.loadString('assets/initial_data.json');
-    List<dynamic> result = jsonDecode(str);
-
-    setState(() {
-      data = result
-          .map((e) => e as List<dynamic>)
-          .map((e) => WeightedLatLng(LatLng(e[0], e[1]), 1))
-          .toList();
-    });
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      index = index == 0 ? 1 : 0;
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _rebuildStream.add(null);
-      });
+      return WeightedLatLng(LatLng(lat, lng), intensity);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _rebuildStream.add(null);
-    });
+    final heatmapPoints = _generateRandomPoints();
+    final radius = 50.0 + _random.nextDouble() * 100.0;
+    final blurFactor = 15.0 + _random.nextDouble() * 25.0;
 
-    final map = new FlutterMap(
-      options: new MapOptions(
-        backgroundColor: Colors.transparent,
-        initialCenter: new LatLng(57.8827, -6.0400),
-        initialZoom: 8.0,
-      ),
-      children: [
-        TileLayer(
-          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-        ),
-        if (data.isNotEmpty)
-          HeatMapLayer(
-            heatMapDataSource: InMemoryHeatMapDataSource(data: data),
-            heatMapOptions: HeatMapOptions(
-              gradient: this.gradients[this.index],
-              minOpacity: 0.1,
-            ),
-            reset: _rebuildStream.stream,
-          ),
-      ],
-    );
     return Scaffold(
-      backgroundColor: Colors.pink,
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Container(child: map),
+      body: FlutterMap(
+        options: MapOptions(
+          initialCenter: LatLng(0, 0), // Center on equator for global view
+          initialZoom: 2.0, // Zoom out to see worldwide patches
+        ),
+        children: [
+          TileLayer(
+            urlTemplate:
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            subdomains: const ['a', 'b', 'c', 'd'],
+            userAgentPackageName: 'com.example.app',
+          ),
+          HeatMapLayer(
+            heatMapDataSource: InMemoryHeatMapDataSource(data: heatmapPoints),
+            heatMapOptions: HeatMapOptions(
+              radius: radius,
+              blurFactor: blurFactor,
+              layerOpacity: 0.7,
+              gradient: {
+                0.0: Colors.blue,
+                0.2: Colors.green,
+                0.4: Colors.yellow,
+                0.7: Colors.orange,
+                1.0: Colors.red,
+              },
+              minOpacity: 0.2,
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Switch Gradient',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
