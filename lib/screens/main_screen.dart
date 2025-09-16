@@ -1,3 +1,4 @@
+import 'package:desaster/screens/heatmap.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'view_locations_screen.dart';
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   static const List<Widget> _screens = <Widget>[
     ViewLocationsScreen(),
     AddLocationScreen(),
+    HeatmapPage(),
     SettingsScreen(),
   ];
 
@@ -127,8 +129,25 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   return Transform.scale(
                     scale: _selectedIndex == 2 ? _scaleAnimation.value : 1.0,
                     child: Icon(
-                      Icons.settings,
+                      Icons.thermostat,
                       color: _selectedIndex == 2
+                          ? AppTheme.primaryColor
+                          : AppTheme.textLight,
+                    ),
+                  );
+                },
+              ),
+              label: 'Heat Map',
+            ),
+            BottomNavigationBarItem(
+              icon: AnimatedBuilder(
+                animation: _scaleAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _selectedIndex == 3 ? _scaleAnimation.value : 1.0,
+                    child: Icon(
+                      Icons.settings,
+                      color: _selectedIndex == 3
                           ? AppTheme.primaryColor
                           : AppTheme.textLight,
                     ),
