@@ -25,7 +25,9 @@ class _HeatmapPageState extends State<HeatmapPage> {
 
   Future<void> _loadHeatmapData() async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/heatmap_data.json');
+      final String jsonString = await rootBundle.loadString(
+        'assets/heatmap_data.json',
+      );
       final List<dynamic> jsonData = json.decode(jsonString);
 
       setState(() {
@@ -48,11 +50,7 @@ class _HeatmapPageState extends State<HeatmapPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final radius = 50.0 + _random.nextDouble() * 100.0;
