@@ -33,6 +33,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/initial_data.json
+    - assets/heatmap_data.json
     - .env
 
   uses-material-design: true

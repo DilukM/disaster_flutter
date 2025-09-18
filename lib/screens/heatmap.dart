@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_heatmap/flutter_map_heatmap.dart';
 import 'package:latlong2/latlong.dart';
@@ -12,23 +14,47 @@ class HeatmapPage extends StatefulWidget {
 
 class _HeatmapPageState extends State<HeatmapPage> {
   final Random _random = Random();
+  List<WeightedLatLng> _heatmapPoints = [];
+  bool _isLoading = true;
 
-  List<WeightedLatLng> _generateRandomPoints() {
-    return List.generate(1000, (index) {
-      // Random locations all over the world
-      final lat = -90.0 + _random.nextDouble() * 180.0; // -90 to 90
-      final lng = -180.0 + _random.nextDouble() * 360.0; // -180 to 180
+  @override
+  void initState() {
+    super.initState();
+    _loadHeatmapData();
+  }
 
-      // Random intensity for full gradient visibility
-      final intensity = 0.1 + _random.nextDouble() * 0.9;
+  Future<void> _loadHeatmapData() async {
+    try {
+      final String jsonString = await rootBundle.loadString('assets/heatmap_data.json');
+      final List<dynamic> jsonData = json.decode(jsonString);
 
-      return WeightedLatLng(LatLng(lat, lng), intensity);
-    });
+      setState(() {
+        _heatmapPoints = jsonData.map((item) {
+          return WeightedLatLng(
+            LatLng(item['lat'], item['lng']),
+            item['intensity'],
+          );
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading heatmap data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final heatmapPoints = _generateRandomPoints();
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     final radius = 50.0 + _random.nextDouble() * 100.0;
     final blurFactor = 15.0 + _random.nextDouble() * 25.0;
 
@@ -36,7 +62,7 @@ class _HeatmapPageState extends State<HeatmapPage> {
       body: FlutterMap(
         options: MapOptions(
           initialCenter: LatLng(0, 0), // Center on equator for global view
-          initialZoom: 2.0, // Zoom out to see worldwide patches
+          initialZoom: 2.0,
         ),
         children: [
           TileLayer(
@@ -46,11 +72,11 @@ class _HeatmapPageState extends State<HeatmapPage> {
             userAgentPackageName: 'com.example.app',
           ),
           HeatMapLayer(
-            heatMapDataSource: InMemoryHeatMapDataSource(data: heatmapPoints),
+            heatMapDataSource: InMemoryHeatMapDataSource(data: _heatmapPoints),
             heatMapOptions: HeatMapOptions(
               radius: radius,
               blurFactor: blurFactor,
-              layerOpacity: 0.7,
+              layerOpacity: 1,
               gradient: {
                 0.0: Colors.blue,
                 0.2: Colors.green,
