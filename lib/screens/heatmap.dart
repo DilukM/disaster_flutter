@@ -64,10 +64,10 @@ class _HeatmapPageState extends State<HeatmapPage> {
         ),
         children: [
           TileLayer(
-            urlTemplate:
-                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-            subdomains: const ['a', 'b', 'c', 'd'],
-            userAgentPackageName: 'com.example.app',
+             urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                userAgentPackageName:
+                    'net.tlserver6y.flutter_map_location_marker.example',
+              
           ),
           HeatMapLayer(
             heatMapDataSource: InMemoryHeatMapDataSource(data: _heatmapPoints),
