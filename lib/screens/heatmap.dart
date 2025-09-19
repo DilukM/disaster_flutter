@@ -77,18 +77,25 @@ class _HeatmapPageState extends State<HeatmapPage> {
         sampledIndices.add(i);
       }
 
-      print('Sampling ${sampledLocations.length} locations out of ${locations.length} for API calls');
+      print(
+        'Sampling ${sampledLocations.length} locations out of ${locations.length} for API calls',
+      );
 
       setState(() => _loadingMessage = 'Fetching weather data...');
       // Fetch real temperature data from Open-Meteo API with timeout
-      final Map<LatLng, double> temperatureData =
-          await _weatherService.fetchTemperaturesForLocations(sampledLocations)
-              .timeout(const Duration(seconds: 30), onTimeout: () {
-            print('Weather API call timed out after 30 seconds');
-            return {}; // Return empty map on timeout
-          });
+      final Map<LatLng, double> temperatureData = await _weatherService
+          .fetchTemperaturesForLocations(sampledLocations)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              print('Weather API call timed out after 30 seconds');
+              return {}; // Return empty map on timeout
+            },
+          );
 
-      print('Received temperature data for ${temperatureData.length} locations');
+      print(
+        'Received temperature data for ${temperatureData.length} locations',
+      );
 
       setState(() => _loadingMessage = 'Processing data...');
       // Create heatmap points with real temperature data
@@ -143,7 +150,9 @@ class _HeatmapPageState extends State<HeatmapPage> {
             item['intensity'],
           );
         }).toList();
-        _intensities = jsonData.map((item) => (item['intensity'] as num).toDouble()).toList();
+        _intensities = jsonData
+            .map((item) => (item['intensity'] as num).toDouble())
+            .toList();
         _filteredPoints = _heatmapPoints;
         _filteredIntensities = _intensities;
         _isLoading = false;
@@ -278,10 +287,6 @@ class _HeatmapPageState extends State<HeatmapPage> {
     return (baseBlur + intensityBlur + densityBlur).clamp(5.0, 50.0);
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -305,7 +310,8 @@ class _HeatmapPageState extends State<HeatmapPage> {
 
     // Calculate average intensity for overall heatmap settings
     double averageIntensity = _filteredIntensities.isNotEmpty
-        ? _filteredIntensities.reduce((a, b) => a + b) / _filteredIntensities.length
+        ? _filteredIntensities.reduce((a, b) => a + b) /
+              _filteredIntensities.length
         : 0.5;
 
     // Get current zoom level for radius calculation (with safety check)
@@ -323,8 +329,13 @@ class _HeatmapPageState extends State<HeatmapPage> {
 
     // For blur factor, calculate based on data density
     int totalPoints = _filteredPoints.length;
-    double dataDensity = totalPoints > 0 ? totalPoints / 1000.0 : 0.1; // Normalize density
-    final blurFactor = _calculateBlurFactor(averageIntensity, (dataDensity * 10).round());
+    double dataDensity = totalPoints > 0
+        ? totalPoints / 1000.0
+        : 0.1; // Normalize density
+    final blurFactor = _calculateBlurFactor(
+      averageIntensity,
+      (dataDensity * 10).round(),
+    );
 
     return Scaffold(
       body: Stack(

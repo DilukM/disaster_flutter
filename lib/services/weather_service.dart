@@ -4,15 +4,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WeatherService {
-  static const String _openMeteoBaseUrl = 'https://api.open-meteo.com/v1/forecast';
+  static const String _openMeteoBaseUrl =
+      'https://api.open-meteo.com/v1/forecast';
 
   // ===== OPEN-METEO API METHODS =====
 
   /// Fetch current temperature from Open-Meteo API for a single location
-  Future<double?> fetchTemperatureFromOpenMeteo(double latitude, double longitude) async {
+  Future<double?> fetchTemperatureFromOpenMeteo(
+    double latitude,
+    double longitude,
+  ) async {
     try {
       final url = Uri.parse(
-        '$_openMeteoBaseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m&timezone=auto'
+        '$_openMeteoBaseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m&timezone=auto',
       );
 
       final response = await http.get(url);
@@ -21,7 +25,9 @@ class WeatherService {
         final data = json.decode(response.body);
         return data['current']['temperature_2m'].toDouble();
       } else {
-        developer.log('Failed to fetch Open-Meteo data: ${response.statusCode}');
+        developer.log(
+          'Failed to fetch Open-Meteo data: ${response.statusCode}',
+        );
         return null;
       }
     } catch (e) {
@@ -31,7 +37,9 @@ class WeatherService {
   }
 
   /// Fetch temperature data for multiple locations using Open-Meteo API
-  Future<Map<LatLng, double>> fetchTemperaturesForLocations(List<LatLng> locations) async {
+  Future<Map<LatLng, double>> fetchTemperaturesForLocations(
+    List<LatLng> locations,
+  ) async {
     Map<LatLng, double> temperatureData = {};
 
     for (final location in locations) {
@@ -61,9 +69,11 @@ class WeatherService {
   }
 
   /// Get intensity values for multiple temperature data points
-  List<double> getIntensitiesFromTemperatures(Map<LatLng, double> temperatureData) {
-    return temperatureData.values.map((temp) => temperatureToIntensity(temp)).toList();
+  List<double> getIntensitiesFromTemperatures(
+    Map<LatLng, double> temperatureData,
+  ) {
+    return temperatureData.values
+        .map((temp) => temperatureToIntensity(temp))
+        .toList();
   }
 }
-
-
