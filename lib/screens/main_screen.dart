@@ -18,9 +18,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   late Animation<double> _scaleAnimation;
 
   static const List<Widget> _screens = <Widget>[
+    HeatmapPage(),
     ViewLocationsScreen(),
     AddLocationScreen(),
-    HeatmapPage(),
     SettingsScreen(),
   ];
 
@@ -95,8 +95,25 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   return Transform.scale(
                     scale: _selectedIndex == 0 ? _scaleAnimation.value : 1.0,
                     child: Icon(
-                      Icons.map,
+                      Icons.thermostat,
                       color: _selectedIndex == 0
+                          ? AppTheme.primaryColor
+                          : AppTheme.textLight,
+                    ),
+                  );
+                },
+              ),
+              label: 'Heat Map',
+            ),
+            BottomNavigationBarItem(
+              icon: AnimatedBuilder(
+                animation: _scaleAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _selectedIndex == 1 ? _scaleAnimation.value : 1.0,
+                    child: Icon(
+                      Icons.map,
+                      color: _selectedIndex == 1
                           ? AppTheme.primaryColor
                           : AppTheme.textLight,
                     ),
@@ -110,10 +127,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 animation: _scaleAnimation,
                 builder: (context, child) {
                   return Transform.scale(
-                    scale: _selectedIndex == 1 ? _scaleAnimation.value : 1.0,
+                    scale: _selectedIndex == 2 ? _scaleAnimation.value : 1.0,
                     child: Icon(
                       Icons.add_location,
-                      color: _selectedIndex == 1
+                      color: _selectedIndex == 2
                           ? AppTheme.primaryColor
                           : AppTheme.textLight,
                     ),
@@ -122,23 +139,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               ),
               label: 'Add Location',
             ),
-            BottomNavigationBarItem(
-              icon: AnimatedBuilder(
-                animation: _scaleAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _selectedIndex == 2 ? _scaleAnimation.value : 1.0,
-                    child: Icon(
-                      Icons.thermostat,
-                      color: _selectedIndex == 2
-                          ? AppTheme.primaryColor
-                          : AppTheme.textLight,
-                    ),
-                  );
-                },
-              ),
-              label: 'Heat Map',
-            ),
+
             BottomNavigationBarItem(
               icon: AnimatedBuilder(
                 animation: _scaleAnimation,

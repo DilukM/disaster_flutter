@@ -1,123 +1,69 @@
-import 'package:weather/weather.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:developer' as developer;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class WeatherService {
-  static const String _apiKey = 'API_KEY_HERE';
-  late final WeatherFactory _wf;
+  static const String _openMeteoBaseUrl = 'https://api.open-meteo.com/v1/forecast';
 
-  WeatherService() {
-    _wf = WeatherFactory(_apiKey);
-  }
+  // ===== OPEN-METEO API METHODS =====
 
-  /// Fetch current weather for a specific location
-  Future<Weather?> getCurrentWeather(LatLng location) async {
+  /// Fetch current temperature from Open-Meteo API for a single location
+  Future<double?> fetchTemperatureFromOpenMeteo(double latitude, double longitude) async {
     try {
-      Weather weather = await _wf.currentWeatherByLocation(
-        location.latitude,
-        location.longitude,
+      final url = Uri.parse(
+        '$_openMeteoBaseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m&timezone=auto'
       );
-      return weather;
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['current']['temperature_2m'].toDouble();
+      } else {
+        developer.log('Failed to fetch Open-Meteo data: ${response.statusCode}');
+        return null;
+      }
     } catch (e) {
-      developer.log(
-        'Error fetching weather for ${location.latitude}, ${location.longitude}: $e',
-      );
+      developer.log('Error fetching Open-Meteo data: $e');
       return null;
     }
   }
 
-  /// Check if the weather conditions indicate a heat wave
-  /// Heat wave criteria: Temperature > 35°C (95°F) for this example
-  static bool isHeatWave(Weather weather) {
-    if (weather.temperature == null) return false;
-    return weather.temperature!.celsius! > 35.0;
-  }
+  /// Fetch temperature data for multiple locations using Open-Meteo API
+  Future<Map<LatLng, double>> fetchTemperaturesForLocations(List<LatLng> locations) async {
+    Map<LatLng, double> temperatureData = {};
 
-  /// Get heat wave intensity level
-  /// Returns 0 (no heat wave), 1 (moderate), 2 (severe), 3 (extreme)
-  static int getHeatWaveIntensity(Weather weather) {
-    if (weather.temperature == null) return 0;
-
-    double tempCelsius = weather.temperature!.celsius!;
-
-    if (tempCelsius < 35.0) return 0; // No heat wave
-    if (tempCelsius < 40.0) return 1; // Moderate heat wave
-    if (tempCelsius < 45.0) return 2; // Severe heat wave
-    return 3; // Extreme heat wave
-  }
-
-  /// Get color for heat wave visualization based on intensity
-  static int getHeatWaveColor(int intensity) {
-    switch (intensity) {
-      case 0:
-        return 0x00000000; // Transparent (no heat wave)
-      case 1:
-        return 0x80FFA500; // Orange with 50% opacity
-      case 2:
-        return 0x80FF4500; // Red-Orange with 50% opacity
-      case 3:
-        return 0x80DC143C; // Crimson with 50% opacity
-      default:
-        return 0x00000000;
-    }
-  }
-
-  /// Fetch weather data for multiple locations
-  Future<Map<LatLng, Weather>> getWeatherForLocations(
-    List<LatLng> locations,
-  ) async {
-    Map<LatLng, Weather> weatherData = {};
-
-    for (LatLng location in locations) {
-      Weather? weather = await getCurrentWeather(location);
-      if (weather != null) {
-        weatherData[location] = weather;
+    for (final location in locations) {
+      final temperature = await fetchTemperatureFromOpenMeteo(
+        location.latitude,
+        location.longitude,
+      );
+      if (temperature != null) {
+        temperatureData[location] = temperature;
       }
-      // Add small delay to avoid API rate limiting
-      await Future.delayed(const Duration(milliseconds: 200));
+
+      // Small delay to respect API rate limits
+      await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    return weatherData;
+    return temperatureData;
+  }
+
+  /// Convert temperature to intensity value (0.0 to 1.0) for heatmap
+  double temperatureToIntensity(double temperature) {
+    // Temperature range from -20°C to 40°C
+    const double minTemp = -20.0;
+    const double maxTemp = 40.0;
+
+    double normalized = (temperature - minTemp) / (maxTemp - minTemp);
+    return normalized.clamp(0.0, 1.0);
+  }
+
+  /// Get intensity values for multiple temperature data points
+  List<double> getIntensitiesFromTemperatures(Map<LatLng, double> temperatureData) {
+    return temperatureData.values.map((temp) => temperatureToIntensity(temp)).toList();
   }
 }
 
-/// Weather data model for UI display
-class LocationWeatherData {
-  final LatLng position;
-  final double radius;
-  final Weather? weather;
-  final bool isHeatWave;
-  final int heatWaveIntensity;
 
-  LocationWeatherData({
-    required this.position,
-    required this.radius,
-    this.weather,
-    this.isHeatWave = false,
-    this.heatWaveIntensity = 0,
-  });
-
-  factory LocationWeatherData.fromLocationData(
-    Map<String, dynamic> locationData,
-    Weather? weather,
-  ) {
-    LatLng position = locationData['position'] as LatLng;
-    double radius = locationData['radius'] as double;
-
-    bool isHeatWave = false;
-    int intensity = 0;
-
-    if (weather != null) {
-      isHeatWave = WeatherService.isHeatWave(weather);
-      intensity = WeatherService.getHeatWaveIntensity(weather);
-    }
-
-    return LocationWeatherData(
-      position: position,
-      radius: radius,
-      weather: weather,
-      isHeatWave: isHeatWave,
-      heatWaveIntensity: intensity,
-    );
-  }
-}
